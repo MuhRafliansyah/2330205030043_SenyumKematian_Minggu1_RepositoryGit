@@ -1,0 +1,28 @@
+# .gitignore - Sistem Laundry
+
+# 1. Database Files (SANGAT KRITIS)
+# Mencegah kebocoran data pelanggan dan password hash
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+
+# 2. Environment Variables & Secrets
+# Mencegah kebocoran konfigurasi dan secret keys
+.env
+.env.production
+.env.development
+*.pem
+*.key
+config/secret.json
+
+# 3. Logs
+# Mencegah kebocoran jejak audit ke repositori
+logs/
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# 4. OS Generated Files
+.DS_Store
+Thumbs.db

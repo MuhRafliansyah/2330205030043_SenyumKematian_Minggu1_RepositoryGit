@@ -1,0 +1,37 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Environment variables (Sangat penting agar tidak ter-commit)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database (SQLite)
+# Karena Anda menggunakan SQLite, file .db tidak boleh di-push agar data lokal tidak tercampur
+*.db
+*.db-journal
+*.sqlite
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Metadata
+.DS_Store
+Thumbs.db
+
+# IDE/Editor folders
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Production/Build output
+dist/
+build/
