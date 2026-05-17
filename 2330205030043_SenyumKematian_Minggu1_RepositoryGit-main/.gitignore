@@ -26,3 +26,7 @@ yarn-error.log*
 # 4. OS Generated Files
 .DS_Store
 Thumbs.db
+
+# 5. Node.js Dependencies
+# Mencegah upload file library eksternal yang ukurannya raksasa
+node_modules/
