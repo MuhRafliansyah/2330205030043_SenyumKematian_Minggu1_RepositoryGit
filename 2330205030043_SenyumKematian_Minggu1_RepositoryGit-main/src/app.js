@@ -1,8 +1,12 @@
 const express = require("express");
 const session = require("express-session");
+const helmet = require("helmet"); // Memanggil helmet untuk Security Headers
 require("dotenv").config();
 
 const app = express();
+
+// Tambahan: Menggunakan helmet untuk mengaktifkan Security Headers secara otomatis
+app.use(helmet());
 
 // Konfigurasi Manajemen Sesi yang Aman (Sesuai Checklist OWASP #6 & #7)
 app.use(
