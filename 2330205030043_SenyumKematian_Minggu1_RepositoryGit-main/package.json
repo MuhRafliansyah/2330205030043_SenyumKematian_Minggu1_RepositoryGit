@@ -1,0 +1,21 @@
+{
+  "name": "2330205030043_senyumkematian_minggu1_repositorygit-main",
+  "version": "1.0.0",
+  "description": "Selamat datang di repositori Proyek **Secure Software Engineering (SSE)**. Proyek ini bertujuan untuk mendigitalisasi operasional usaha laundry kiloan dengan fokus utama pada integritas data keuangan dan perlindungan privasi pelanggan melalui metodologi **S-SDLC (Secure Software Development Life Cycle)**.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "helmet": "^8.1.0",
+    "sqlite3": "^6.0.1"
+  }
+}
