@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<div class="nav">
+  <b>Laundry SSE</b>
+  <span>
+    Login sebagai <%= user.username %> (<%= user.role %>) 
+    <a href="/logout">Logout</a>
+  </span>
+</div>
+
+<div class="container">
+  <h2>Dashboard</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Profil</h3>
+      <p>Melihat data akun pengguna.</p>
+      <a class="btn" href="/profile">Buka Profil</a>
+    </div>
+    <div class="card">
+      <h3>Transaksi Laundry</h3>
+      <p>Kelola transaksi pelanggan.</p>
+      <a class="btn" href="/transactions">Buka Transaksi</a>
+    </div>
+    <div class="card">
+      <h3>Data Pelanggan</h3>
+      <p>Fitur search aman dari XSS.</p>
+      <a class="btn" href="/customers">Buka Pelanggan</a>
+    </div>
+    
+    <% if (user.role === 'admin') { %>
+      <div class="card">
+        <h3>Admin Panel</h3>
+        <p>Akses khusus pemilik (RBAC diterapkan).</p>
+        <a class="btn danger" href="/admin">Buka Admin</a>
+      </div>
+    <% } %>
+  </div>
+</div>
+</body>
+</html>
