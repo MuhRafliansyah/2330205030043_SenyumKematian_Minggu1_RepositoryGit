@@ -1,0 +1,17 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Transaksi</title><link rel="stylesheet" href="/assets/style.css"></head><body>
+<div class="nav"><b>Laundry SSE</b><span><a href="/dashboard">Dashboard</a><a href="/logout">Logout</a></span></div>
+<div class="container"><h2>Transaksi Laundry</h2>
+<form method="post" action="/transactions">
+  <label>Pelanggan</label>
+  <select name="customer_id">
+    <% customers.forEach(function(c) { %> <option value="<%= c.id %>"><%= c.name %></option> <% }); %>
+  </select>
+  <label>Berat Cucian (kg)</label><input name="weight" type="number" value="3">
+  <label>Layanan</label><input name="service" value="Cuci Kering">
+  <button type="submit">Simpan Transaksi</button>
+</form>
+<table><tr><th>ID</th><th>Pelanggan</th><th>Berat</th><th>Layanan</th><th>Total</th><th>Status</th></tr>
+<% transactions.forEach(function(r) { %>
+  <tr><td><%= r.id %></td><td><%= r.name %></td><td><%= r.weight %> kg</td><td><%= r.service %></td><td>Rp <%= r.total_price %></td><td><%= r.status %></td></tr>
+<% }); %>
+</table></div></body></html>

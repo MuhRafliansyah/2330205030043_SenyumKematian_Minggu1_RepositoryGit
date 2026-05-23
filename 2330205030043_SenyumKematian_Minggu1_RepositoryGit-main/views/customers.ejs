@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Pelanggan</title><link rel="stylesheet" href="/assets/style.css"></head><body>
+<div class="nav"><b>Laundry SSE</b><span><a href="/dashboard">Dashboard</a><a href="/logout">Logout</a></span></div>
+<div class="container"><h2>Data Pelanggan</h2>
+<form method="get" action="/customers">
+  <input name="q" placeholder="Cari nama pelanggan" value="<%= q %>">
+  <button type="submit">Cari</button>
+</form>
+<% if (q !== '') { %> <p>Hasil pencarian untuk: <b><%= q %></b></p> <% } %>
+<table><tr><th>ID</th><th>Nama</th><th>Telepon</th><th>Alamat</th></tr>
+<% customers.forEach(function(row) { %>
+  <tr><td><%= row.id %></td><td><%= row.name %></td><td><%= row.phone %></td><td><%= row.address %></td></tr>
+<% }); %>
+</table>
+<p class="muted">Celah XSS telah ditambal oleh EJS escape rendering otomatis.</p>
+</div></body></html>

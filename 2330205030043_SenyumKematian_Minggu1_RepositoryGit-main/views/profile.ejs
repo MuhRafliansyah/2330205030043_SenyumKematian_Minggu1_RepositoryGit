@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Profil</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body>
+    <div class="nav">
+      <b>Laundry SSE</b
+      ><span
+        ><a href="/dashboard">Dashboard</a><a href="/logout">Logout</a></span
+      >
+    </div>
+    <div class="container">
+      <h2>Profil User</h2>
+      <table>
+        <tr>
+          <th>ID</th>
+          <td><%= userData.id %></td>
+        </tr>
+        <tr>
+          <th>Username</th>
+          <td><%= userData.username %></td>
+        </tr>
+        <tr>
+          <th>Role</th>
+          <td><%= userData.role %></td>
+        </tr>
+        <tr>
+          <th>Nama</th>
+          <td><%= userData.full_name %></td>
+        </tr>
+        <tr>
+          <th>No HP</th>
+          <td><%= userData.phone %></td>
+        </tr>
+      </table>
+      <p class="muted">
+        Celah IDOR telah ditambal. Data diambil berdasarkan sesi login, bukan
+        URL.
+      </p>
+    </div>
+  </body>
+</html>

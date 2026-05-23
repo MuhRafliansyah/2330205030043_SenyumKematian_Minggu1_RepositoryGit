@@ -6,6 +6,7 @@
 *.sqlite3
 *.db
 *.db3
+laundry_data.sqlite
 
 # 2. Environment Variables & Secrets
 # Mencegah kebocoran konfigurasi dan secret keys

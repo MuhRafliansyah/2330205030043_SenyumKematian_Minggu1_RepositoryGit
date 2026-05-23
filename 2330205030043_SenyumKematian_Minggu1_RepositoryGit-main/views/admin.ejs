@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Admin</title><link rel="stylesheet" href="/assets/style.css"></head><body>
+<div class="nav"><b>Laundry SSE - Admin</b><span><a href="/dashboard">Dashboard</a><a href="/logout">Logout</a></span></div>
+<div class="container"><h2>Admin Panel</h2>
+<div class="alert" style="background:#dcfce3;border-color:#86efac;">Halaman ini sekarang DIPROTEKSI. Hanya akun dengan role 'admin' yang bisa melihat ini.</div>
+<table><tr><th>ID</th><th>Pelanggan</th><th>Total</th><th>Status</th><th>Aksi</th></tr>
+<% transactions.forEach(function(r) { %>
+  <tr><td><%= r.id %></td><td><%= r.name %></td><td>Rp <%= r.total_price %></td><td><%= r.status %></td>
+  <td><a class="btn danger" href="/delete?id=<%= r.id %>">Delete</a></td></tr>
+<% }); %>
+</table></div></body></html>
