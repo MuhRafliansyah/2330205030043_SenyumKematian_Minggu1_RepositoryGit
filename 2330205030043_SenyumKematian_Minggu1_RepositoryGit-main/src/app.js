@@ -51,6 +51,15 @@ function requireLogin(req, res, next) {
 }
 
 // ==========================================
+// CONFIGURATION ALERTING & ANOMALY DETECTION (MINGGU 4)
+// ==========================================
+// Menyimpan data percobaan login gagal berdasarkan IP pengguna
+const loginFailureTracker = new Map();
+
+const FAILURE_LIMIT = 5; // Batas maksimal kegagalan
+const LOCK_TIME = 5 * 60 * 1000; // Durasi penguncian (5 menit dalam milidetik)
+
+// ==========================================
 // 6. DAFTAR ROUTE APLIKASI
 // ==========================================
 
@@ -68,9 +77,38 @@ app.get("/login", (req, res) => {
   res.render("login", { error: null });
 });
 
-// Proses Form Login (Anti-SQLi & Verifikasi Bcrypt)
+// Proses Form Login (Anti-SQLi, Verifikasi Bcrypt, & Brute-Force Alerting)
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
+  const userIp = req.ip;
+  const currentTime = Date.now();
+
+  // MINGGU 4: Cek apakah IP saat ini sedang ditangguhkan/dikunci
+  if (loginFailureTracker.has(userIp)) {
+    const trackData = loginFailureTracker.get(userIp);
+
+    // HANYA cek waktu penguncian JIKA batas kegagalan sudah tercapai
+    if (trackData.count >= FAILURE_LIMIT) {
+      if (currentTime < trackData.lockUntil) {
+        // AKTIF: Masih dalam masa hukuman, blokir akses!
+        logger.error({
+          event: "BRUTE_FORCE_BLOCKED",
+          ip: userIp,
+          username: username,
+          timestamp: new Date(),
+          details: `IP blocked. Remaining lock time: ${Math.round((trackData.lockUntil - currentTime) / 1000)} seconds.`,
+        });
+
+        return res.status(429).render("login", {
+          error:
+            "Aktivitas mencurigakan terdeteksi. IP Anda diblokir sementara selama 5 menit!",
+        });
+      } else {
+        // Masa hukuman selesai, hapus riwayat dan berikan kesempatan baru
+        loginFailureTracker.delete(userIp);
+      }
+    }
+  }
 
   // AMAN: Menggunakan Parameterized Query (?) untuk memitigasi SQL Injection
   const query = `SELECT id, username, password_hash, role FROM users WHERE username = ?`;
@@ -83,18 +121,45 @@ app.post("/login", (req, res) => {
       });
     }
 
-    // Proteksi: Jika user tidak ditemukan, tetap berikan pesan error generik
-    if (!user) {
-      logger.warn({
-        event: "LOGIN_FAILED",
-        username,
-        ip: req.ip,
-        timestamp: new Date(),
-      });
+    // Fungsi pembantu untuk mencatat kegagalan dan menaikkan counter
+    const handleLoginFailure = (reasonText) => {
+      let trackData = loginFailureTracker.get(userIp) || {
+        count: 0,
+        lockUntil: 0,
+      };
+      trackData.count += 1;
 
-      return res.render("login", {
-        error: "Username atau password salah!",
-      });
+      if (trackData.count >= FAILURE_LIMIT) {
+        trackData.lockUntil = Date.now() + LOCK_TIME;
+
+        // MINGGU 4: Memicu alert HIGH/CRITICAL ketika serangan terdeteksi otomatis
+        logger.error({
+          event: "ALERT_SUSPICIOUS_ACTIVITY",
+          level: "CRITICAL",
+          ip: userIp,
+          username: username,
+          timestamp: new Date(),
+          details: `Anomali Terdeteksi: 5x Gagal Login berturut-turut. IP dikunci selama 5 menit!`,
+        });
+      } else {
+        // Logging standar untuk login gagal
+        logger.warn({
+          event: "LOGIN_FAILED",
+          username,
+          ip: userIp,
+          timestamp: new Date(),
+          reason: reasonText,
+          attempt: trackData.count,
+        });
+      }
+
+      loginFailureTracker.set(userIp, trackData);
+      return res.render("login", { error: "Username atau password salah!" });
+    };
+
+    // Proteksi 1: Jika user tidak ditemukan
+    if (!user) {
+      return handleLoginFailure("USER_NOT_FOUND");
     }
 
     try {
@@ -102,14 +167,18 @@ app.post("/login", (req, res) => {
       const match = await bcrypt.compare(password, user.password_hash);
 
       if (match) {
+        // Berhasil login: Bersihkan counter kegagalan untuk IP ini
+        loginFailureTracker.delete(userIp);
+
         logger.info({
           event: "LOGIN_SUCCESS",
           username: user.username,
           userId: user.id,
           role: user.role,
-          ip: req.ip,
+          ip: userIp,
           timestamp: new Date(),
         });
+
         // Login Berhasil: Daftarkan data pengguna ke dalam sesi aman
         req.session.userId = user.id;
         req.session.username = user.username;
@@ -117,14 +186,8 @@ app.post("/login", (req, res) => {
 
         return res.redirect("/dashboard");
       } else {
-        logger.warn({
-          event: "LOGIN_FAILED",
-          username,
-          ip: req.ip,
-          timestamp: new Date(),
-          reason: "INVALID_PASSWORD",
-        });
-        return res.render("login", { error: "Username atau password salah!" });
+        // Proteksi 2: Password salah
+        return handleLoginFailure("INVALID_PASSWORD");
       }
     } catch (bcryptErr) {
       console.error(bcryptErr);
