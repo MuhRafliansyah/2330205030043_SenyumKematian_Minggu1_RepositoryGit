@@ -3,6 +3,7 @@ const session = require("express-session");
 const helmet = require("helmet");
 const bcrypt = require("bcrypt");
 const sqlite3 = require("sqlite3").verbose();
+const logger = require("./utils/logger");
 require("dotenv").config();
 
 const app = express();
@@ -84,7 +85,16 @@ app.post("/login", (req, res) => {
 
     // Proteksi: Jika user tidak ditemukan, tetap berikan pesan error generik
     if (!user) {
-      return res.render("login", { error: "Username atau password salah!" });
+      logger.warn({
+        event: "LOGIN_FAILED",
+        username,
+        ip: req.ip,
+        timestamp: new Date(),
+      });
+
+      return res.render("login", {
+        error: "Username atau password salah!",
+      });
     }
 
     try {
@@ -92,6 +102,14 @@ app.post("/login", (req, res) => {
       const match = await bcrypt.compare(password, user.password_hash);
 
       if (match) {
+        logger.info({
+          event: "LOGIN_SUCCESS",
+          username: user.username,
+          userId: user.id,
+          role: user.role,
+          ip: req.ip,
+          timestamp: new Date(),
+        });
         // Login Berhasil: Daftarkan data pengguna ke dalam sesi aman
         req.session.userId = user.id;
         req.session.username = user.username;
@@ -99,6 +117,13 @@ app.post("/login", (req, res) => {
 
         return res.redirect("/dashboard");
       } else {
+        logger.warn({
+          event: "LOGIN_FAILED",
+          username,
+          ip: req.ip,
+          timestamp: new Date(),
+          reason: "INVALID_PASSWORD",
+        });
         return res.render("login", { error: "Username atau password salah!" });
       }
     } catch (bcryptErr) {
