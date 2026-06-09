@@ -1,4 +1,4 @@
-# 🛡️ Sistem Pencatatan Keuangan Laundry Kiloan (Secure-Laundry-App)
+# 🛡️ Sistem Informasi Manajemen Laundry Kiloan (Secure Version)
 
 Selamat datang di repositori Proyek **Secure Software Engineering (SSE)**. Proyek ini bertujuan untuk mendigitalisasi operasional usaha laundry kiloan dengan fokus utama pada integritas data keuangan dan perlindungan privasi pelanggan melalui metodologi **S-SDLC (Secure Software Development Life Cycle)**.
 
@@ -15,39 +15,86 @@ Selamat datang di repositori Proyek **Secure Software Engineering (SSE)**. Proye
 | **Muhammad Arifin Ilham** | 2330205030034 | Anggota Kelompok |
 | **Athay Setya Dwi Putri** | 2330105030024 | Anggota Kelompok |
 
+**Versi Rilis:** `v1.0-secure` (Final Release)
+
 ---
 
 ## 🚀 Gambaran Proyek
 
-Sistem ini dirancang sebagai aplikasi desktop lokal (_offline_) yang mengelola:
+Sistem ini dirancang sebagai aplikasi pencatatan transaksi kasir lokal yang mengelola:
 
 - Pencatatan transaksi laundry secara otomatis.
 - Manajemen data pelanggan (PII).
-- Pengelolaan pengeluaran operasional dan pendapatan.
-- Laporan laba/rugi yang hanya dapat diakses oleh Pemilik.
-
-### 🛡️ Fokus Keamanan (Minggu 1)
-
-Proyek ini mengimplementasikan prinsip _Security by Design_ sejak fase perencanaan:
-
-- **Threat Modeling:** Analisis ancaman menggunakan metodologi **STRIDE**.
-- **Attack Tree:** Visualisasi skenario serangan kritis terhadap aset bisnis.
-- **Secure Architecture:** Penerapan _Layered Architecture_ dan _Principle of Least Privilege_.
+- Manajemen pengguna dengan tingkat hak akses yang berbeda (Pemilik vs Karyawan).
 
 ---
 
-## 🛠️ Stack Teknologi (Justifikasi Keamanan)
+## 🛡️ Ringkasan Keamanan (Security Posture)
 
-1. **Frontend/UI:** (Sebutkan Stack, misal: React/Electron) - Dipilih karena dukungan library sanitasi input yang kuat.
-2. **Backend Logic:** Node.js - Memudahkan implementasi middleware keamanan.
-3. **Database:** SQLite (Encrypted via SQLCipher) - Melindungi data _at-rest_ pada penyimpanan lokal.
-4. **Security:** Bcrypt/Argon2 (Password Hashing) & Parameterized Queries (Anti-SQLi).
+Aplikasi ini telah melewati serangkaian fase pengujian dan pengerasan (_hardening_) keamanan tingkat lanjut dari Minggu 1 hingga Minggu 4:
+
+1. **Authentication (Kriptografi):** Penyimpanan kata sandi menggunakan hashing **Bcrypt** dengan _Cost Factor_ 12.
+2. **Input Validation (Anti-SQLi):** Penerapan **Parameterized Queries** secara menyeluruh pada operasi _database_ SQLite untuk memblokir SQL Injection.
+3. **Access Control (RBAC & IDOR):** - Pemisahan hak akses menggunakan fungsi _Middleware_ untuk memproteksi halaman _Admin Panel_.
+   - Penambalan celah IDOR (Insecure Direct Object Reference) dengan memvalidasi kepemilikan data melalui ID Sesi server, bukan parameter URL.
+4. **Web Security:** - Konfigurasi **HTTP Security Headers** menggunakan library `Helmet.js`.
+   - Proteksi sesi aman menggunakan kuki dengan atribut `HttpOnly`, `SameSite: strict`, dan `maxAge`.
+   - Mitigasi serangan _Cross-Site Scripting_ (XSS) melalui _escape rendering_ otomatis pada _template engine_ EJS.
+5. **Monitoring & Alerting:** - Implementasi pencatatan log aktivitas terstruktur dalam format JSON.
+   - Proteksi **Anti Brute-Force** yang secara otomatis mengunci IP penyerang selama 5 menit jika terdeteksi 5 kali kegagalan login secara berturut-turut.
 
 ---
 
-## ⚙️ Panduan Instalasi & Setup Keamanan
+## 🛠️ Stack Teknologi
 
-1. **Clone Repository:**
+Sistem ini dibangun menggunakan arsitektur MVC (Model-View-Controller) yang solid:
+
+- **Frontend/UI:** EJS (Embedded JavaScript Templating) & CSS murni.
+- **Backend Logic:** Node.js dengan _framework_ Express.js.
+- **Database:** SQLite (Sistem basis data portabel lokal).
+- **Security Middleware:** Helmet, Express-Session, Bcrypt.
+
+---
+
+## ⚙️ Panduan Instalasi & Cara Menjalankan
+
+Ikuti langkah-langkah di bawah ini untuk menjalankan aplikasi di lingkungan lokal:
+
+1. **Clone Repositori:**
+
    ```bash
    git clone [https://github.com/MuhRafliansyah/2330205030043_SenyumKematian_Minggu1_RepositoryGit.git](https://github.com/MuhRafliansyah/2330205030043_SenyumKematian_Minggu1_RepositoryGit.git)
+
+   cd 2330205030043_SenyumKematian_Minggu1_RepositoryGit
+
    ```
+
+2. Instalasi Dependensi:
+
+   ```Bash
+   npm install
+
+   ```
+
+3. Konfigurasi Environment:
+   - Ubah nama file .env.example menjadi .env.
+   - Sesuaikan secret keys dan parameter lainnya jika diperlukan.
+
+4. Inisialisasi Database (Hanya untuk penggunaan pertama):
+
+   ```Bash
+   node initDb.js
+
+   ```
+
+5. Jalankan Server Aplikasi:
+
+   ```Bash
+   node src/app.js
+
+   Aplikasi dapat diakses melalui browser pada alamat http://localhost:3000.
+   ```
+
+Akun Testing (Dummy Data):
+Hak Akses Pemilik (Admin): admin / admin123
+Hak Akses Karyawan (User): budi / budi123
